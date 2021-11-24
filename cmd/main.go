@@ -5,23 +5,61 @@ import (
 	"github.com/aceakash/sort"
 	"log"
 	"math/rand"
+	"runtime"
+	"sync"
 	"time"
 )
 
 func main() {
+	singleGoRoutine()
+	multipleGoRoutines()
+}
+
+func multipleGoRoutines() {
 	const numOfLists = 64
-	const lengthOfEachList = 20 * 1000
+	const lengthOfEachList = 25 * 1000
+	allLists := makeRandomListsToSort(lengthOfEachList, numOfLists)
+
+	concurrency := runtime.NumCPU()
+	batchSize := numOfLists / concurrency
+
+	startTime := time.Now()
+
+	wg := sync.WaitGroup{}
+	wg.Add(concurrency)
+
+	for i := 0; i < concurrency; i++ {
+		go func(i int) {
+			start := i * batchSize
+			upto := (i + 1) * batchSize
+			lists := allLists[start:upto]
+			for _, list := range lists {
+				sort.BubbleSort(list)
+				//log.Printf("[singleGoRoutine] Sorted list %d of %d\n", i+1, numOfLists)
+			}
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+	duration := time.Since(startTime)
+
+	fmt.Printf("[manyyGoroutines] Took %v to sort %d lists of %d ints each", duration, numOfLists, lengthOfEachList)
+}
+
+func singleGoRoutine() {
+	const numOfLists = 64
+	const lengthOfEachList = 25 * 1000
 
 	lists := makeRandomListsToSort(lengthOfEachList, numOfLists)
 
 	start := time.Now()
 	for i, list := range lists {
 		sort.BubbleSort(list)
-		log.Printf("Sorted list %d of %d\n", i+1, numOfLists)
+		log.Printf("[singleGoRoutine] Sorted list %d of %d\n", i+1, numOfLists)
 	}
 	duration := time.Since(start)
-
-	fmt.Printf("Took %v to sort %d lists of %d ints each", duration, numOfLists, lengthOfEachList)
+	fmt.Println("====================================")
+	fmt.Printf("[singleGoRoutine] Took %v to sort %d lists of %d ints each\n", duration, numOfLists, lengthOfEachList)
 }
 
 func makeRandomListsToSort(lengthOfEachList int, numOfLists int) [][]int {
