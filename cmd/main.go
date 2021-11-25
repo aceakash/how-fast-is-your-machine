@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/aceakash/sort"
 	"log"
 	"math/rand"
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/aceakash/sort"
 )
 
 func main() {
@@ -43,7 +44,7 @@ func multipleGoRoutines() {
 	wg.Wait()
 	duration := time.Since(startTime)
 
-	fmt.Printf("[manyyGoroutines] Took %v to sort %d lists of %d ints each", duration, numOfLists, lengthOfEachList)
+	fmt.Printf("[manyyGoroutines] Took %v to sort %d lists of %d ints each\n", duration, numOfLists, lengthOfEachList)
 }
 
 func singleGoRoutine() {
