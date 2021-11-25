@@ -44,7 +44,7 @@ func multipleGoRoutines() {
 	wg.Wait()
 	duration := time.Since(startTime)
 
-	fmt.Printf("[manyyGoroutines] Took %v to sort %d lists of %d ints each\n", duration, numOfLists, lengthOfEachList)
+	fmt.Printf("[manyyGoroutines] Took %v to sort %d lists of %d ints each (%d goroutines)\n", duration, numOfLists, lengthOfEachList, concurrency)
 }
 
 func singleGoRoutine() {
